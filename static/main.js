@@ -1,17 +1,20 @@
 function deleteTask(taskId) {
-  fetch(`/tasks/${taskId}`, {
-    method: "DELETE",
+  // Call your delete task API
+  fetch(`/tasks/${taskId}`, { // Change /delete_task/ to /tasks/
+  method: 'DELETE',
+})
+  .then(response => {
+    if (response.ok) {
+      // Remove task card from the DOM
+      taskCard.remove();
+    } else {
+      alert("Error deleting task. Please try again.");
+    }
   })
-    .then((response) => {
-      if (response.ok) {
-        window.location.reload();
-      } else {
-        alert("Error: failed to delete the task");
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+  .catch(error => {
+    console.error('Error:', error);
+    alert("Error deleting task. Please try again.");
+  });
 }
 
 document.querySelectorAll(".delete-task").forEach((button) => {
