@@ -24,12 +24,12 @@
                             <li class="list-group-item">
                                 <input type="checkbox" id="checkbox-{{ todo.id }}" {% if todo.completed %}checked{% endif %} onchange="toggleTodo({{ todo.id }})"> 
                                 <span id="todo-content-{{ todo.id }}"{% if todo.completed %} style="text-decoration: line-through"{% endif %}>{{ todo.content }}</span>
-                                <button class="btn btn-secondary btn-sm" onclick="editTodo({{ todo.id }})">Edit</button>
+                                <button class="btn btn-secondary btn-sm" id="edit-todo-{{ todo.id }}" onclick="editTodo({{ todo.id }})">Edit</button>
                             </li>
                         {% endfor %}
                     </ul>
                     <button class="btn btn-danger mt-3" onclick="deleteTask({{ task.id }})">Delete</button>
-                    <button class="btn btn-secondary mt-3" onclick="editTask({{ task.id }})">Edit</button>
+                    <button class="btn btn-secondary mt-3" id="edit-task-{{ task.id }}" onclick="editTask({{ task.id }})">Edit</button>
                 </div>
             </div>
         {% endfor %}
@@ -88,32 +88,34 @@
         }
     
         function editTask(task_id) {
-            const taskTitle = document.querySelector(`#task-card-${task_id} .card-title`);
-            const newTitle = prompt("Edit task title:", taskTitle.textContent);
-        
-            if (newTitle === null || newTitle.trim() === "") {
-                return; // User clicked "Cancel" or entered an empty string
+            const taskTitle = document.getElementById("task-title-" + task_id);
+            const editTaskButton = document.getElementById("edit-task-" + task_id);
+          
+            if (taskTitle.getAttribute("contenteditable") !== "true") {
+              taskTitle.setAttribute("contenteditable", "true");
+              taskTitle.focus();
+              editTaskButton.innerText = "Save";
+            } else {
+              taskTitle.removeAttribute("contenteditable");
+              editTaskButton.innerText = "Edit";
+              // Call your update task API to save the changes
             }
-        
-            // Call your edit task API here, and update the title in the DOM when successful
-            // For example:
-            // fetch(`/tasks/${task_id}`, { method: 'PUT', ... })
-            taskTitle.textContent = newTitle;
-        }
-        
-        function editTodo(todo_id) {
-            const todoContent = document.querySelector(`#todo-content-${todo_id}`);
-            const newContent = prompt("Edit todo content:", todoContent.textContent);
-        
-            if (newContent === null || newContent.trim() === "") {
-                return; // User clicked "Cancel" or entered an empty string
+          }
+          
+          function editTodo(todo_id) {
+            const todoContent = document.getElementById("todo-content-" + todo_id);
+            const editTodoButton = document.getElementById("edit-todo-" + todo_id);
+          
+            if (todoContent.getAttribute("contenteditable") !== "true") {
+              todoContent.setAttribute("contenteditable", "true");
+              todoContent.focus();
+              editTodoButton.innerText = "Save";
+            } else {
+              todoContent.removeAttribute("contenteditable");
+              editTodoButton.innerText = "Edit";
+              // Call your update todo API to save the changes
             }
-        
-            // Call your edit todo API here, and update the content in the DOM when successful
-            // For example:
-            // fetch(`/todos/${todo_id}`, { method: 'PUT', ... })
-            todoContent.textContent = newContent;
-        }
+          }          
     </script>
 </body>
 </html>
