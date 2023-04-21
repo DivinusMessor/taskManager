@@ -2,6 +2,7 @@ from flask import request
 from app import app, db
 from models import Task, Todo
 from datetime import datetime
+from traceback import format_exc
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
 
@@ -70,7 +71,12 @@ def update_task(task_id):
 def delete_task(task_id):
     task = Task.query.get(task_id)
     if task:
+        todos = Todo.query.filter(Todo.task_id == task_id).all()
+        for todo in todos:
+            db.session.delete(todo)
+
         db.session.delete(task)
         db.session.commit()
         return jsonify({"message": "Task deleted successfully"})
     return jsonify({"message": "Task not found"}), 404
+

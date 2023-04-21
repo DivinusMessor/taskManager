@@ -14,7 +14,8 @@
         <h1 class="text-center mt-5">Task Manager</h1>
         
         <!-- Add Task button -->
-        <a href="{{ url_for('add_task') }}" class="btn btn-primary mb-3">Add Task</a>
+        <a href="{{ url_for('add_task_page') }}" class="btn btn-primary mb-3">Add Task</a>
+        
 
         <!-- Display tasks and their to-dos -->
         {% for task in tasks %}
@@ -31,6 +32,8 @@
                             </li>
                         {% endfor %}
                     </ul>
+                    <!-- Add the Delete button inside the task card -->
+                    <button class="btn btn-danger mt-3" onclick="deleteTask({{ task.id }})">Delete</button>
                 </div>
             </div>
         {% endfor %}
