@@ -183,9 +183,12 @@ function editTodo(todo_id) {
 
 function removeTodo(todo_id) {
   const todoItem = document.getElementById("todo-item-" + todo_id);
-  todoItem.remove();
+  if (todoItem) {
+    todoItem.remove();
+  }
   // Call your delete todo API to remove the todo from the server-side
 }
+
 
 function moveTodoUp(todo_id) {
   const todoItem = document.getElementById("todo-item-" + todo_id);
@@ -209,18 +212,23 @@ function addTodo(task_id) {
   const taskCard = document.getElementById("task-card-" + task_id);
   const todosList = taskCard.querySelector(".list-group");
 
+  // Generate a unique ID for the new todo item
+  const newTodoId = Date.now();
+
   const newTodoItem = document.createElement("li");
   newTodoItem.className = "list-group-item";
+  newTodoItem.id = "todo-item-" + newTodoId; // Assign the ID to the new todo item
   newTodoItem.innerHTML = `
     <input type="checkbox">
     <span contenteditable="true">New Todo</span>
-    <button class="btn btn-danger btn-sm remove-todo hide-button" onclick="removeTodo(this.parentElement)">Remove</button>
-    <button class="btn btn-secondary btn-sm move-up-todo hide-button" onclick="moveTodoUp(this.parentElement)">Up</button>
-    <button class="btn btn-secondary btn-sm move-down-todo hide-button" onclick="moveTodoDown(this.parentElement)">Down</button>
+    <button class="btn btn-danger btn-sm remove-todo hide-button" onclick="removeTodo(${newTodoId})">Remove</button>
+    <button class="btn btn-secondary btn-sm move-up-todo hide-button" onclick="moveTodoUp(${newTodoId})">Up</button>
+    <button class="btn btn-secondary btn-sm move-down-todo hide-button" onclick="moveTodoDown(${newTodoId})">Down</button>
   `;
 
   todosList.appendChild(newTodoItem);
-}      
+}
+    
 
 function saveNewTodo(task_id, todoItem) {
   const newTodoContent = todoItem.querySelector("span[contenteditable='true']");
