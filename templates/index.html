@@ -67,14 +67,6 @@
                 >{{ todo.content }}</span
               >
               <button
-                class="btn btn-secondary btn-sm edit-todo"
-                data-todo-id="{{ todo.id }}"
-                onclick="editTodo({{ todo.id }})"
-              >
-                <i class="fas fa-pencil-alt"></i>
-                <i class="fas fa-check" style="display: none"></i>
-              </button>
-              <button
                 class="btn btn-danger btn-sm remove-todo"
                 onclick="removeTodo({{ todo.id }})"
                 style="display: none"
