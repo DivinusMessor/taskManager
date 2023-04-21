@@ -1,8 +1,8 @@
 from flask import request
 from app import app, db
-from models import Task
+from models import Task, Todo
 from datetime import datetime
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect, url_for
 
 
 # Route to root page and list all tasks
@@ -24,15 +24,24 @@ def add_task_page():
     return render_template('add_task.html')
 
 # add task functionality 
-@app.route('/tasks', methods=['POST'])
+@app.route('/add-task', methods=['POST'])
 def add_task():
-    data = request.get_json()
-    title = data['title']
-    description = data['description']
+    title = request.form['title']
+    description = request.form['description']
+    todos_data = request.form.getlist('todos[]')
     new_task = Task(title=title, description=description, completed=False, created_at=datetime.utcnow())
+    
     db.session.add(new_task)
+    db.session.commit()  # Commit the new task to obtain its ID
+
+    for todo in todos_data:
+        if todo.strip() != "":
+            new_todo = Todo(content=todo, completed=False, created_at=datetime.utcnow(), task_id=new_task.id)  # Change task to task_id
+            db.session.add(new_todo)
+
     db.session.commit()
-    return jsonify({"message": "Task added successfully"}), 201
+    return redirect(url_for('index'))
+
 
 
 # Route to get a specific task

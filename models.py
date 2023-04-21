@@ -9,3 +9,13 @@ class Task(db.Model):
     description = db.Column(db.String(255), nullable=True)
     completed = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    todos = db.relationship('Todo', back_populates='parent_task', lazy=True)
+    
+class Todo(db.Model):
+    __tablename__ = 'todo'
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    content = db.Column(db.String(255), nullable=False)
+    completed = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    parent_task = db.relationship('Task', back_populates='todos')
