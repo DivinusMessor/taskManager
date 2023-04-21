@@ -219,14 +219,18 @@ function addTodo(task_id) {
   newTodoItem.className = "list-group-item";
   newTodoItem.id = "todo-item-" + newTodoId; // Assign the ID to the new todo item
   newTodoItem.innerHTML = `
-    <input type="checkbox">
-    <span contenteditable="true">New Todo</span>
+    <input type="checkbox" id="checkbox-${newTodoId}" onchange="toggleTodo(${newTodoId})">
+    <span id="todo-content-${newTodoId}" contenteditable="true">New Todo</span>
     <button class="btn btn-danger btn-sm remove-todo hide-button" onclick="removeTodo(${newTodoId})">Remove</button>
     <button class="btn btn-secondary btn-sm move-up-todo hide-button" onclick="moveTodoUp(${newTodoId})">Up</button>
     <button class="btn btn-secondary btn-sm move-down-todo hide-button" onclick="moveTodoDown(${newTodoId})">Down</button>
   `;
 
   todosList.appendChild(newTodoItem);
+
+  // Attach the event listener to the new checkbox
+  const newCheckbox = document.getElementById("checkbox-" + newTodoId);
+  newCheckbox.addEventListener("change", () => toggleTodo(newTodoId));
 }
     
 
