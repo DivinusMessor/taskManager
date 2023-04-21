@@ -173,64 +173,70 @@
       // Modify the editTask function
       function editTask(task_id) {
         const taskTitle = document.getElementById("task-title-" + task_id);
-        const todoItems = document.querySelectorAll(
-          "#task-card-" + task_id + " .list-group-item"
-        );
+        const todoItems = document.querySelectorAll("#task-card-" + task_id + " .list-group-item");
         const editButton = document.getElementById("edit-task-" + task_id);
         const isEditable = taskTitle.getAttribute("contenteditable") === "true";
-
+                    
         if (isEditable) {
-          taskTitle.setAttribute("contenteditable", "false");
-          editButton.textContent = "Edit";
-
-          todoItems.forEach((todoItem) => {
-            const todoId = todoItem.id.split("-")[2];
-            const todoContent = document.getElementById(
-              "todo-content-" + todoId
-            );
-            const editTodoButton = document.querySelector(
-              `[data-todo-id="${todoId}"]`
-            );
-            const removeTodoButton = todoItem.querySelector(".remove-todo");
-            if (todoContent) {
-              todoContent.setAttribute("contenteditable", "false");
-            }
-            if (editTodoButton) {
-              editTodoButton.style.display = "none";
-            }
-            if (removeTodoButton) {
-              removeTodoButton.style.display = "none";
-            }
-          });
-
-          // Save changes to the server, if needed
-          // Update the task creation date to the current date
+            taskTitle.setAttribute("contenteditable", "false");
+            editButton.textContent = "Edit";
+        
+            todoItems.forEach((todoItem) => {
+                const todoId = todoItem.id.split('-')[2];
+                const todoContent = document.getElementById("todo-content-" + todoId);
+                const editTodoButton = document.querySelector(`[data-todo-id="${todoId}"]`);
+                const removeTodoButton = todoItem.querySelector(".remove-todo");
+                const moveUpTodoButton = todoItem.querySelector(".move-up-todo");
+                const moveDownTodoButton = todoItem.querySelector(".move-down-todo");
+                if (todoContent) {
+                    todoContent.setAttribute("contenteditable", "false");
+                }
+                if (editTodoButton) {
+                    editTodoButton.style.display = "none";
+                }
+                if (removeTodoButton) {
+                    removeTodoButton.style.display = "none";
+                }
+                if (moveUpTodoButton) {
+                    moveUpTodoButton.style.display = "none";
+                }
+                if (moveDownTodoButton) {
+                    moveDownTodoButton.style.display = "none";
+                }
+            });
+        
+            // Save changes to the server, if needed
+            // Update the task creation date to the current date
         } else {
-          taskTitle.setAttribute("contenteditable", "true");
-          taskTitle.focus();
-          editButton.textContent = "Save";
-
-          todoItems.forEach((todoItem) => {
-            const todoId = todoItem.id.split("-")[2];
-            const todoContent = document.getElementById(
-              "todo-content-" + todoId
-            );
-            const editTodoButton = document.querySelector(
-              `[data-todo-id="${todoId}"]`
-            );
-            const removeTodoButton = todoItem.querySelector(".remove-todo");
-            if (todoContent) {
-              todoContent.setAttribute("contenteditable", "true");
-            }
-            if (editTodoButton) {
-              editTodoButton.style.display = "inline";
-            }
-            if (removeTodoButton) {
-              removeTodoButton.style.display = "inline";
-            }
-          });
+            taskTitle.setAttribute("contenteditable", "true");
+            taskTitle.focus();
+            editButton.textContent = "Save";
+        
+            todoItems.forEach((todoItem) => {
+                const todoId = todoItem.id.split('-')[2];
+                const todoContent = document.getElementById("todo-content-" + todoId);
+                const editTodoButton = document.querySelector(`[data-todo-id="${todoId}"]`);
+                const removeTodoButton = todoItem.querySelector(".remove-todo");
+                const moveUpTodoButton = todoItem.querySelector(".move-up-todo");
+                const moveDownTodoButton = todoItem.querySelector(".move-down-todo");
+                if (todoContent) {
+                    todoContent.setAttribute("contenteditable", "true");
+                }
+                if (editTodoButton) {
+                    editTodoButton.style.display = "inline";
+                }
+                if (removeTodoButton) {
+                    removeTodoButton.style.display = "inline";
+                }
+                if (moveUpTodoButton) {
+                    moveUpTodoButton.style.display = "inline";
+                }
+                if (moveDownTodoButton) {
+                    moveDownTodoButton.style.display = "inline";
+                }
+            });
         }
-      }
+    }    
 
       // Add this to your JavaScript
       document.addEventListener("DOMContentLoaded", function () {
