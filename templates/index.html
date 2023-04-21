@@ -15,7 +15,11 @@
         {% for task in tasks %}
             <div class="card mb-3" id="task-card-{{ task.id }}">
                 <div class="card-body">
-                    <h5 class="card-title">{{ task.title }} <small class="text-muted">{{ task.created_at.strftime("%B %d, %Y") }}</small></h5>
+                    <h5 class="card-title">
+                        <span id="task-title-{{ task.id }}" contenteditable="false">{{ task.title }}</span>
+                        <small class="text-muted">{{ task.created_at.strftime("%B %d, %Y") }}</small>
+                    </h5>
+                    
                     {% if task.description %}
                         <p class="card-text">{{ task.description }}</p>
                     {% endif %}
@@ -89,33 +93,31 @@
     
         function editTask(task_id) {
             const taskTitle = document.getElementById("task-title-" + task_id);
-            const editTaskButton = document.getElementById("edit-task-" + task_id);
-          
-            if (taskTitle.getAttribute("contenteditable") !== "true") {
-              taskTitle.setAttribute("contenteditable", "true");
-              taskTitle.focus();
-              editTaskButton.innerText = "Save";
+            const isEditable = taskTitle.getAttribute("contenteditable") === "true";
+            
+            if (isEditable) {
+                taskTitle.setAttribute("contenteditable", "false");
+                // Save changes to the server, if needed
             } else {
-              taskTitle.removeAttribute("contenteditable");
-              editTaskButton.innerText = "Edit";
-              // Call your update task API to save the changes
+                taskTitle.setAttribute("contenteditable", "true");
+                taskTitle.focus();
             }
-          }
+        }        
           
-          function editTodo(todo_id) {
+        function editTodo(todo_id) {
             const todoContent = document.getElementById("todo-content-" + todo_id);
             const editTodoButton = document.getElementById("edit-todo-" + todo_id);
-          
+            
             if (todoContent.getAttribute("contenteditable") !== "true") {
-              todoContent.setAttribute("contenteditable", "true");
-              todoContent.focus();
-              editTodoButton.innerText = "Save";
+                todoContent.setAttribute("contenteditable", "true");
+                todoContent.focus();
+                editTodoButton.innerText = "Save";
             } else {
-              todoContent.removeAttribute("contenteditable");
-              editTodoButton.innerText = "Edit";
-              // Call your update todo API to save the changes
+                todoContent.removeAttribute("contenteditable");
+                editTodoButton.innerText = "Edit";
+                // Call your update todo API to save the changes
             }
-          }          
+        }          
     </script>
 </body>
 </html>
