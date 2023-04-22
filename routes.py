@@ -80,3 +80,12 @@ def delete_task(task_id):
         return jsonify({"message": "Task deleted successfully"})
     return jsonify({"message": "Task not found"}), 404
 
+# remove todo
+@app.route("/todos/<int:todo_id>", methods=["DELETE"])
+def delete_todo(todo_id):
+    todo = Todo.query.get(todo_id)
+    if todo:
+        db.session.delete(todo)
+        db.session.commit()
+        return jsonify({"message": "Todo deleted successfully"})
+    return jsonify({"message": "Todo not found"}), 404

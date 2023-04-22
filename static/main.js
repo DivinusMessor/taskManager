@@ -181,14 +181,24 @@ function editTodo(todo_id) {
   }
 }
 
-function removeTodo(todo_id) {
-  const todoItem = document.getElementById("todo-item-" + todo_id);
-  if (todoItem) {
-    todoItem.remove();
-  }
-  // Call your delete todo API to remove the todo from the server-side
-}
+function removeTodo(todoId) {
+  const todoItem = document.getElementById(`todo-item-${todoId}`);
+  todoItem.remove();
 
+  // Send DELETE request to the server
+  fetch(`/todos/${todoId}`, {
+    method: "DELETE",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Error removing todo.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("Failed to remove the todo. Please try again.");
+    });
+}
 
 function moveTodoUp(todo_id) {
   const todoItem = document.getElementById("todo-item-" + todo_id);
