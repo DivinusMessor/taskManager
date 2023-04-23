@@ -111,9 +111,9 @@ def delete_task(task_id):
 
 
 # remove todo
-@app.route("/todos/<int:todo_id>", methods=["DELETE"])
-def delete_todo(todo_id):
-    todo = Todo.query.get(todo_id)
+@app.route("/todos/<int:todoID>", methods=["DELETE"])
+def delete_todo(todoID):
+    todo = Todo.query.get(todoID)
     if todo:
         db.session.delete(todo)
         db.session.commit()
@@ -165,13 +165,13 @@ def save_task():
     task.description = description
 
     for updated_todo in updated_todos:
-        todo_id = updated_todo["id"]
+        todoID = updated_todo["id"]
         todo_content = updated_todo["content"]
         todo_completed = updated_todo["completed"]
 
-        todo = Todo.query.get(todo_id)
+        todo = Todo.query.get(todoID)
         if not todo:
-            return jsonify({"message": f"Todo with id {todo_id} not found"}), 404
+            return jsonify({"message": f"Todo with id {todoID} not found"}), 404
 
         todo.content = todo_content
         todo.completed = todo_completed
@@ -180,10 +180,10 @@ def save_task():
     return jsonify({"message": "Task updated successfully"})
 
 # Update checkbox when clicked 
-@app.route('/todos/<int:todo_id>', methods=['PUT'])
-def update_todo(todo_id):
+@app.route('/todos/<int:todoID>', methods=['PUT'])
+def update_todo(todoID):
     try:
-        todo = Todo.query.get(todo_id)
+        todo = Todo.query.get(todoID)
 
         if not todo:
             return jsonify({'message': 'Todo not found'}), 404

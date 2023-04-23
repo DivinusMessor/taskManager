@@ -55,9 +55,9 @@ document.querySelectorAll(".complete-task").forEach((button) => {
   });
 });
 
-function toggleTodo(todo_id) {
-  const checkbox = document.getElementById("checkbox-" + todo_id);
-  const content = document.getElementById("todo-content-" + todo_id);
+function toggleTodo(todoID) {
+  const checkbox = document.getElementById("checkbox-" + todoID);
+  const content = document.getElementById("todo-content-" + todoID);
 
   if (checkbox.checked) {
     content.style.textDecoration = "line-through";
@@ -199,9 +199,9 @@ async function saveTask(task_id) {
   }
 }
 
-function editTodo(todo_id) {
-  const todoContent = document.getElementById("todo-content-" + todo_id);
-  const editTodoButton = document.querySelector(`[data-todo-id="${todo_id}"]`);
+function editTodo(todoID) {
+  const todoContent = document.getElementById("todo-content-" + todoID);
+  const editTodoButton = document.querySelector(`[data-todo-id="${todoID}"]`);
   const pencilIcon = editTodoButton.querySelector(".fas.fa-pencil-alt");
   const checkIcon = editTodoButton.querySelector(".fas.fa-check");
 
@@ -237,8 +237,8 @@ function removeTodo(todoId) {
     });
 }
 
-function moveTodoUp(todo_id) {
-  const todoItem = document.getElementById("todo-item-" + todo_id);
+function moveTodoUp(todoID) {
+  const todoItem = document.getElementById("todo-item-" + todoID);
   const previousItem = todoItem.previousElementSibling;
   if (previousItem) {
     todoItem.parentNode.insertBefore(todoItem, previousItem);
@@ -246,8 +246,8 @@ function moveTodoUp(todo_id) {
   }
 }
 
-function moveTodoDown(todo_id) {
-  const todoItem = document.getElementById("todo-item-" + todo_id);
+function moveTodoDown(todoID) {
+  const todoItem = document.getElementById("todo-item-" + todoID);
   const nextItem = todoItem.nextElementSibling;
   if (nextItem) {
     todoItem.parentNode.insertBefore(nextItem, todoItem);
@@ -328,10 +328,10 @@ async function updateTaskTitle(task_id, titleElement) {
   }
 }
 
-async function updateTodoContent(todo_id, todoContentElement) {
-  console.log("Updating todo content with ID:", todo_id);
+async function updateTodoContent(todoID, todoContentElement) {
+  console.log("Updating todo content with ID:", todoID);
   try {
-    const response = await fetch(`/todos/${todo_id}`, {
+    const response = await fetch(`/todos/${todoID}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -359,8 +359,8 @@ function attachBlurEventListeners() {
 
   document.querySelectorAll(".todo-content").forEach((todoContentElement) => {
     todoContentElement.addEventListener("blur", (event) => {
-      const todo_id = event.target.parentElement.id.split("-")[2];
-      updateTodoContent(todo_id, event.target);
+      const todoID = event.target.parentElement.id.split("-")[2];
+      updateTodoContent(todoID, event.target);
     });
   });
 }
