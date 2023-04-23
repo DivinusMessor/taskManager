@@ -89,3 +89,18 @@ def delete_todo(todo_id):
         db.session.commit()
         return jsonify({"message": "Todo deleted successfully"})
     return jsonify({"message": "Todo not found"}), 404
+
+# creating todo
+@app.route("/tasks/<int:task_id>/todos", methods=["POST"])
+def create_todo(task_id):
+    data = request.get_json()
+    content = data.get("content", "").strip()
+
+    if not content:
+        return jsonify({"message": "Content cannot be empty."}), 400
+
+    new_todo = Todo(content=content, completed=False, created_at=datetime.utcnow(), task_id=task_id)
+    db.session.add(new_todo)
+    db.session.commit()
+
+    return jsonify({"id": new_todo.id, "content": new_todo.content, "completed": new_todo.completed})

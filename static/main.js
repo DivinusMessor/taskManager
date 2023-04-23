@@ -218,7 +218,7 @@ function moveTodoDown(todo_id) {
   }
 }
 
-function addTodo(task_id) {
+async function addTodo(task_id) {
   const taskCard = document.getElementById("task-card-" + task_id);
   const todosList = taskCard.querySelector(".list-group");
 
@@ -241,10 +241,12 @@ function addTodo(task_id) {
   // Attach the event listener to the new checkbox
   const newCheckbox = document.getElementById("checkbox-" + newTodoId);
   newCheckbox.addEventListener("change", () => toggleTodo(newTodoId));
+
+  // Save the new todo immediately
+  await saveNewTodo(task_id, newTodoItem);
 }
     
-
-function saveNewTodo(task_id, todoItem) {
+async function saveNewTodo(task_id, todoItem) {
   const newTodoContent = todoItem.querySelector("span[contenteditable='true']");
 
   if (newTodoContent.textContent.trim() === "") {
@@ -252,8 +254,43 @@ function saveNewTodo(task_id, todoItem) {
     return;
   }
 
-  // Call your create todo API to add the new todo on the server-side
-  // Pass task_id and newTodoContent.textContent as parameters to your API
-  // On successful creation of the new todo, update the todoItem with the appropriate data and event listeners
-  // Example: Assign an ID, make the content non-editable, add the other buttons, etc.
+  try {
+    const response = await fetch(`/tasks/${task_id}/todos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content: newTodoContent.textContent }),
+    });
+
+    if (response.ok) {
+      const todo = await response.json();
+      todoItem.id = `todo-item-${todo.id}`;
+      newTodoContent.contentEditable = "false";
+      newTodoContent.id = `todo-content-${todo.id}`;
+
+      // Add other elements, such as checkbox and buttons, to the new todo item
+      // Similar to how you add them when loading the initial todos in the index.html
+
+      // Example:
+      const todoCheckbox = document.createElement("input");
+      todoCheckbox.type = "checkbox";
+      todoCheckbox.id = `checkbox-${todo.id}`;
+      todoCheckbox.addEventListener("change", () => toggleTodo(todo.id));
+      todoItem.prepend(todoCheckbox);
+
+      // Add other buttons (remove, move up, move down) as well
+
+      // Update the remove button onclick attribute
+      const removeButton = todoItem.querySelector('.remove-todo');
+      removeButton.setAttribute('onclick', `removeTodo(${todo.id})`);
+
+    } else {
+      throw new Error("Error creating todo.");
+      alert("An error occurred while trying to save the new todo. Please try again.");
+    }
+  } catch (error) {
+    console.error("Error creating todo:", error);
+    alert("Failed to create the todo. Please try again.");
+  }
 }
