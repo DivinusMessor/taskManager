@@ -114,6 +114,8 @@ def save_task():
     description = data['description']
     updated_todos = data['todos']
 
+    print(f"Updating task with ID {task_id}, title {title}, description {description}")  # Add this line
+    
     task = Task.query.get(task_id)
     if not task:
         return jsonify({"message": "Task not found"}), 404
