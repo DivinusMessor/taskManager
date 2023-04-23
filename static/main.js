@@ -77,7 +77,7 @@ function editTask(task_id) {
   const isEditable = taskTitle.getAttribute("contenteditable") === "true";
   const taskCard = document.getElementById("task-card-" + task_id);
   const taskDescription = taskCard.querySelector(".card-text");
-  const addTodoButton = taskCard.querySelector(".add-todo-button"); // Add this line
+  const addTodoButton = taskCard.querySelector(".add-todo-button");
 
   if (isEditable) {
     taskTitle.setAttribute("contenteditable", "false");
@@ -85,13 +85,10 @@ function editTask(task_id) {
 
     todoItems.forEach((todoItem) => {
       const todoId = todoItem.id.split("-")[2];
-      const todoContent = document.getElementById(
-        "todo-content-" + todoId
-      );
+      const todoContent = document.getElementById("todo-content-" + todoId);
       const removeTodoButton = todoItem.querySelector(".remove-todo");
       const moveUpTodoButton = todoItem.querySelector(".move-up-todo");
-      const moveDownTodoButton =
-        todoItem.querySelector(".move-down-todo");
+      const moveDownTodoButton = todoItem.querySelector(".move-down-todo");
       if (todoContent) {
         todoContent.setAttribute("contenteditable", "false");
       }
@@ -123,13 +120,10 @@ function editTask(task_id) {
 
     todoItems.forEach((todoItem) => {
       const todoId = todoItem.id.split("-")[2];
-      const todoContent = document.getElementById(
-        "todo-content-" + todoId
-      );
+      const todoContent = document.getElementById("todo-content-" + todoId);
       const removeTodoButton = todoItem.querySelector(".remove-todo");
       const moveUpTodoButton = todoItem.querySelector(".move-up-todo");
-      const moveDownTodoButton =
-        todoItem.querySelector(".move-down-todo");
+      const moveDownTodoButton = todoItem.querySelector(".move-down-todo");
       if (todoContent) {
         todoContent.setAttribute("contenteditable", "true");
       }
@@ -142,15 +136,23 @@ function editTask(task_id) {
       if (moveDownTodoButton) {
         moveDownTodoButton.style.display = "inline";
       }
-      if (taskDescription) {
-        taskDescription.setAttribute("contenteditable", "true");
-      }
-      if (addTodoButton) {
-        addTodoButton.style.display = "inline";
-      }
     });
+
+    if (taskDescription) {
+      taskDescription.setAttribute("contenteditable", "true");
+    }
+    if (addTodoButton) {
+      addTodoButton.style.display = "inline";
+    }
+
+    // Add the following block of code
+    if (todoItems.length === 0 && !addTodoButton) {
+      const addTodoItemBtn = createAddTodoButton(task_id);
+      taskCard.querySelector(".list-group").appendChild(addTodoItemBtn);
+    }
   }
 }
+
 
 async function saveTask(task_id) {
   const taskTitle = document.getElementById("task-title-" + task_id).textContent;
