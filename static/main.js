@@ -36,11 +36,7 @@ function toggleTaskCompletion(taskId, completed) {
     body: JSON.stringify({ completed: !completed }),
   })
     .then((response) => {
-      if (response.ok) {
-        window.location.reload();
-      } else {
-        alert("Error: failed to toggle the task completion state");
-      }
+      alert("Error: failed to toggle the task completion state");
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -55,17 +51,33 @@ document.querySelectorAll(".complete-task").forEach((button) => {
   });
 });
 
-function toggleTodo(todoID) {
+async function toggleTodo(todoID) {
   const checkbox = document.getElementById("checkbox-" + todoID);
   const content = document.getElementById("todo-content-" + todoID);
+  const completed = checkbox.checked;
 
-  if (checkbox.checked) {
+  if (completed) {
     content.style.textDecoration = "line-through";
   } else {
     content.style.textDecoration = "none";
   }
 
-  // You can also call an API here to update the todo.completed status on the server-side
+  try {
+    const response = await fetch(`/todos/${todoID}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ completed: completed }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error updating todo completed status.");
+    }
+  } catch (error) {
+    console.error("Error updating todo completed status:", error);
+    alert("Failed to update the todo completed status. Please try again.");
+  }
 }
 
 function editTask(task_id) {
@@ -235,24 +247,6 @@ function removeTodo(todoId) {
       console.error("Error:", error);
       alert("Failed to remove the todo. Please try again.");
     });
-}
-
-function moveTodoUp(todoID) {
-  const todoItem = document.getElementById("todo-item-" + todoID);
-  const previousItem = todoItem.previousElementSibling;
-  if (previousItem) {
-    todoItem.parentNode.insertBefore(todoItem, previousItem);
-    // Call your update todo API to update the order of todos on the server-side
-  }
-}
-
-function moveTodoDown(todoID) {
-  const todoItem = document.getElementById("todo-item-" + todoID);
-  const nextItem = todoItem.nextElementSibling;
-  if (nextItem) {
-    todoItem.parentNode.insertBefore(nextItem, todoItem);
-    // Call your update todo API to update the order of todos on the server-side
-  }
 }
 
 async function addTodo(task_id) {
