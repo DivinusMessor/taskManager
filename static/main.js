@@ -206,6 +206,7 @@ async function saveTask(task_id) {
     }
 
     console.log("Task saved successfully.");
+    location.reload();
   } catch (error) {
     console.error("There was a problem with the fetch operation:", error);
   }
@@ -263,8 +264,6 @@ async function addTodo(task_id) {
     <input type="checkbox" id="checkbox-${newTodoId}" class="toggle-todo" onchange="toggleTodo(${newTodoId})">
     <span id="todo-content-${newTodoId}" class="todo-content" contenteditable="true">New Todo</span>
     <button class="btn btn-danger btn-sm remove-todo hide-button" onclick="removeTodo(${newTodoId})">Remove</button>
-    <button class="btn btn-secondary btn-sm move-up-todo hide-button" onclick="moveTodoUp(${newTodoId})">Up</button>
-    <button class="btn btn-secondary btn-sm move-down-todo hide-button" onclick="moveTodoDown(${newTodoId})">Down</button>
   `;
 
   todosList.appendChild(newTodoItem);
