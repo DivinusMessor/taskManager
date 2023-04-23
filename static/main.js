@@ -160,14 +160,15 @@ async function saveTask(task_id) {
   const todoItems = Array.from(document.querySelectorAll("#task-card-" + task_id + " .list-group-item")).map(todoItem => {
     const todoId = todoItem.id.split("-")[2];
     const todoContent = document.getElementById("todo-content-" + todoId).textContent;
-    return {id: todoId, content: todoContent};
+    const todoCompleted = todoItem.classList.contains("list-group-item-success");
+    return {id: todoId, content: todoContent, completed: todoCompleted};
   });
 
   const taskData = {
-    task_id: task_id,
+    id: task_id,
     title: taskTitle,
     description: taskDescription,
-    todo_items: todoItems,
+    todos: todoItems,
   };
 
   try {
@@ -188,6 +189,7 @@ async function saveTask(task_id) {
     console.error('There was a problem with the fetch operation:', error);
   }
 }
+
 
 
 function editTodo(todo_id) {

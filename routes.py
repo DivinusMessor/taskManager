@@ -109,15 +109,29 @@ def create_todo(task_id):
 @app.route('/tasks/save', methods=['POST'])
 def save_task():
     data = request.get_json()
-    task_id = data.get("task_id")
-    title = data.get("title")
-    description = data.get("description")
+    task_id = data['id']
+    title = data['title']
+    description = data['description']
+    updated_todos = data['todos']
 
     task = Task.query.get(task_id)
-    if task:
-        task.title = title
-        task.description = description
-        db.session.commit()
-        return jsonify({"message": "Task saved successfully"})
-    else:
+    if not task:
         return jsonify({"message": "Task not found"}), 404
+
+    task.title = title
+    task.description = description
+
+    for updated_todo in updated_todos:
+        todo_id = updated_todo['id']
+        todo_content = updated_todo['content']
+        todo_completed = updated_todo['completed']
+
+        todo = Todo.query.get(todo_id)
+        if not todo:
+            return jsonify({"message": f"Todo with id {todo_id} not found"}), 404
+
+        todo.content = todo_content
+        todo.completed = todo_completed
+
+    db.session.commit()
+    return jsonify({"message": "Task updated successfully"})
