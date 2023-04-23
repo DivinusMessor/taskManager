@@ -1,5 +1,6 @@
 function deleteTask(taskId) {
   const taskCard = document.getElementById("task-card-" + taskId);
+  console.log('Editing task with ID:', task_id);
 
   // Call your delete task API
   fetch(`/tasks/${taskId}`, { // Change /delete_task/ to /tasks/
@@ -67,7 +68,6 @@ function toggleTodo(todo_id) {
   // You can also call an API here to update the todo.completed status on the server-side
 }
 
-// Modify the editTask function
 function editTask(task_id) {
   const taskTitle = document.getElementById("task-title-" + task_id);
   const todoItems = document.querySelectorAll(
@@ -77,7 +77,7 @@ function editTask(task_id) {
   const isEditable = taskTitle.getAttribute("contenteditable") === "true";
   const taskCard = document.getElementById("task-card-" + task_id);
   const taskDescription = taskCard.querySelector(".card-text");
-  const addTodoButton = taskCard.querySelector(".add-todo-button");
+  const addTodoButton = taskCard.querySelector(".add-todo-button"); // Add this line
 
   if (isEditable) {
     taskTitle.setAttribute("contenteditable", "false");
@@ -115,6 +115,7 @@ function editTask(task_id) {
 
     // Save changes to the server, if needed
     // Update the task creation date to the current date
+    saveTask(task_id);
   } else {
     taskTitle.setAttribute("contenteditable", "true");
     taskTitle.focus();
@@ -151,14 +152,43 @@ function editTask(task_id) {
   }
 }
 
-// Add this to your JavaScript
-document.addEventListener("DOMContentLoaded", function () {
-  const editTodoButtons = document.querySelectorAll(".edit-todo");
+async function saveTask(task_id) {
+  const taskTitle = document.getElementById("task-title-" + task_id).textContent;
+  const taskCard = document.getElementById("task-card-" + task_id);
+  const taskDescription = taskCard.querySelector(".card-text").textContent;
 
-  editTodoButtons.forEach((editTodoButton) => {
-    editTodoButton.style.display = "none";
+  const todoItems = Array.from(document.querySelectorAll("#task-card-" + task_id + " .list-group-item")).map(todoItem => {
+    const todoId = todoItem.id.split("-")[2];
+    const todoContent = document.getElementById("todo-content-" + todoId).textContent;
+    return {id: todoId, content: todoContent};
   });
-});
+
+  const taskData = {
+    task_id: task_id,
+    title: taskTitle,
+    description: taskDescription,
+    todo_items: todoItems,
+  };
+
+  try {
+    const response = await fetch('/tasks/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(taskData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    console.log('Task saved successfully.');
+  } catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+  }
+}
+
 
 function editTodo(todo_id) {
   const todoContent = document.getElementById("todo-content-" + todo_id);
@@ -268,4 +298,60 @@ async function addTodo(task_id) {
     console.error("Error creating todo:", error);
     alert("Failed to create the todo. Please try again.");
   }
+}
+
+async function updateTaskTitle(task_id, titleElement) {
+  console.log('Updating task title with ID:', task_id);
+  try {
+    const response = await fetch(`/tasks/${task_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title: titleElement.textContent }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error updating task title.");
+    }
+  } catch (error) {
+    console.error("Error updating task title:", error);
+    alert("Failed to update the task title. Please try again.");
+  }
+}
+
+async function updateTodoContent(todo_id, todoContentElement) {
+  console.log('Updating todo content with ID:', todo_id);
+  try {
+    const response = await fetch(`/todos/${todo_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content: todoContentElement.textContent }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error updating todo content.");
+    }
+  } catch (error) {
+    console.error("Error updating todo content:", error);
+    alert("Failed to update the todo content. Please try again.");
+  }
+}
+
+function attachBlurEventListeners() {
+  document.querySelectorAll(".card-title").forEach((titleElement) => {
+    titleElement.addEventListener("blur", (event) => {
+      const task_id = event.target.parentElement.parentElement.parentElement.id.split("-")[2];
+      updateTaskTitle(task_id, event.target);
+    });
+  });
+
+  document.querySelectorAll(".todo-content").forEach((todoContentElement) => {
+    todoContentElement.addEventListener("blur", (event) => {
+      const todo_id = event.target.parentElement.id.split("-")[2];
+      updateTodoContent(todo_id, event.target);
+    });
+  });
 }
