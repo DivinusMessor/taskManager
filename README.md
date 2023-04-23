@@ -22,12 +22,14 @@ Copy code
 - app.py
 - models.py
 - routes.py
-Installation & Setup
+
+# Installation & Setup
 Clone the repository to your local machine:
 
-bash
+```bash
 Copy code
 git clone https://github.com/yourusername/task-management-system.git
+```
 Navigate to the project directory:
 
 bash
