@@ -1,3 +1,20 @@
+// Event Listeners
+document.querySelectorAll(".delete-task").forEach((button) => {
+  button.addEventListener("click", () => {
+    const taskId = button.getAttribute("data-task-id");
+    deleteTask(taskId);
+  });
+});
+
+document.querySelectorAll(".complete-task").forEach((button) => {
+  button.addEventListener("click", () => {
+    const taskId = button.getAttribute("data-task-id");
+    const completed = button.getAttribute("data-completed") === "True";
+    toggleTaskCompletion(taskId, completed);
+  });
+});
+
+
 // Task related functions 
 function deleteTask(taskId) {
   const taskCard = document.getElementById("task-card-" + taskId);
@@ -193,9 +210,7 @@ async function updateTaskTitle(task_id, titleElement) {
   }
 }
 
-
-// Todo related funtions 
-function toggleTodo(todo_id) {
+async function toggleTodo(todo_id) {
   const checkbox = document.getElementById("checkbox-" + todo_id);
   const content = document.getElementById("todo-content-" + todo_id);
 
@@ -205,7 +220,23 @@ function toggleTodo(todo_id) {
     content.style.textDecoration = "none";
   }
 
-  // You can also call an API here to update the todo.completed status on the server-side
+  // Call an API here to update the todo.completed status on the server-side
+  try {
+    const response = await fetch(`/todos/${todo_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ completed: checkbox.checked }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error updating todo completion status.");
+    }
+  } catch (error) {
+    console.error("Error updating todo completion status:", error);
+    alert("Failed to update the todo completion status. Please try again.");
+  }
 }
 
 function editTodo(todo_id) {
@@ -318,23 +349,6 @@ async function updateTodoContent(todo_id, todoContentElement) {
     alert("Failed to update the todo content. Please try again.");
   }
 }
-
-
-// Event Listeners
-document.querySelectorAll(".delete-task").forEach((button) => {
-  button.addEventListener("click", () => {
-    const taskId = button.getAttribute("data-task-id");
-    deleteTask(taskId);
-  });
-});
-
-document.querySelectorAll(".complete-task").forEach((button) => {
-  button.addEventListener("click", () => {
-    const taskId = button.getAttribute("data-task-id");
-    const completed = button.getAttribute("data-completed") === "True";
-    toggleTaskCompletion(taskId, completed);
-  });
-});
 
 
 // Utility Functions 

@@ -7,42 +7,62 @@ from flask import Flask, jsonify, request, render_template, redirect, url_for
 
 
 # Route to root page and list all tasks
-@app.route('/')
+@app.route("/")
 def index():
     tasks = Task.query.all()
-    return render_template('index.html', tasks=tasks)
+    return render_template("index.html", tasks=tasks)
+
 
 # Route to get all tasks
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
     tasks = Task.query.all()
-    tasks_list = [{"id": task.id, "title": task.title, "description": task.description, "completed": task.completed} for task in tasks]
+    tasks_list = [
+        {
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            "completed": task.completed,
+        }
+        for task in tasks
+    ]
     return jsonify(tasks_list)
 
-# render add task page
-@app.route('/add-task')
-def add_task_page():
-    return render_template('add_task.html')
 
-# add task functionality 
-@app.route('/add-task', methods=['POST'])
+# render add task page
+@app.route("/add-task")
+def add_task_page():
+    return render_template("add_task.html")
+
+
+# add task functionality
+@app.route("/add-task", methods=["POST"])
 def add_task():
-    title = request.form['title']
-    description = request.form['description']
-    todos_data = request.form.getlist('todos[]')
-    new_task = Task(title=title, description=description, completed=False, created_at=datetime.utcnow())
-    
+    title = request.form["title"]
+    description = request.form["description"]
+    todos_data = request.form.getlist("todos[]")
+    new_task = Task(
+        title=title,
+        description=description,
+        completed=False,
+        created_at=datetime.utcnow(),
+    )
+
     db.session.add(new_task)
     db.session.commit()  # Commit the new task to obtain its ID
 
     for todo in todos_data:
         if todo.strip() != "":
-            new_todo = Todo(content=todo, completed=False, created_at=datetime.utcnow(), task_id=new_task.id)  # Change task to task_id
+            new_todo = Todo(
+                content=todo,
+                completed=False,
+                created_at=datetime.utcnow(),
+                task_id=new_task.id,
+            )  # Change task to task_id
             db.session.add(new_todo)
 
     db.session.commit()
-    return redirect(url_for('index'))
-
+    return redirect(url_for("index"))
 
 
 # Route to get a specific task
@@ -50,8 +70,16 @@ def add_task():
 def get_task(task_id):
     task = Task.query.get(task_id)
     if task:
-        return jsonify({"id": task.id, "title": task.title, "description": task.description, "completed": task.completed})
+        return jsonify(
+            {
+                "id": task.id,
+                "title": task.title,
+                "description": task.description,
+                "completed": task.completed,
+            }
+        )
     return jsonify({"message": "Task not found"}), 404
+
 
 # Route to update an existing task
 @app.route("/tasks/<int:task_id>", methods=["PUT"])
@@ -65,6 +93,7 @@ def update_task(task_id):
         db.session.commit()
         return jsonify({"message": "Task updated successfully"})
     return jsonify({"message": "Task not found"}), 404
+
 
 # Route to delete a specific task
 @app.route("/tasks/<int:task_id>", methods=["DELETE"])
@@ -80,6 +109,7 @@ def delete_task(task_id):
         return jsonify({"message": "Task deleted successfully"})
     return jsonify({"message": "Task not found"}), 404
 
+
 # remove todo
 @app.route("/todos/<int:todo_id>", methods=["DELETE"])
 def delete_todo(todo_id):
@@ -90,6 +120,7 @@ def delete_todo(todo_id):
         return jsonify({"message": "Todo deleted successfully"})
     return jsonify({"message": "Todo not found"}), 404
 
+
 # creating todo
 @app.route("/tasks/<int:task_id>/todos", methods=["POST"])
 def create_todo(task_id):
@@ -99,23 +130,33 @@ def create_todo(task_id):
     if not content:
         return jsonify({"message": "Content cannot be empty."}), 400
 
-    new_todo = Todo(content=content, completed=False, created_at=datetime.utcnow(), task_id=task_id)
+    new_todo = Todo(
+        content=content, completed=False, created_at=datetime.utcnow(), task_id=task_id
+    )
     db.session.add(new_todo)
     db.session.commit()
 
-    return jsonify({"id": new_todo.id, "content": new_todo.content, "completed": new_todo.completed})
+    return jsonify(
+        {
+            "id": new_todo.id,
+            "content": new_todo.content,
+            "completed": new_todo.completed,
+        }
+    )
 
 
-@app.route('/tasks/save', methods=['POST'])
+@app.route("/tasks/save", methods=["POST"])
 def save_task():
     data = request.get_json()
-    task_id = data['id']
-    title = data['title']
-    description = data['description']
-    updated_todos = data['todos']
+    task_id = data["id"]
+    title = data["title"]
+    description = data["description"]
+    updated_todos = data["todos"]
 
-    print(f"Updating task with ID {task_id}, title {title}, description {description}")  # Add this line
-    
+    print(
+        f"Updating task with ID {task_id}, title {title}, description {description}"
+    )  # Add this line
+
     task = Task.query.get(task_id)
     if not task:
         return jsonify({"message": "Task not found"}), 404
@@ -124,9 +165,9 @@ def save_task():
     task.description = description
 
     for updated_todo in updated_todos:
-        todo_id = updated_todo['id']
-        todo_content = updated_todo['content']
-        todo_completed = updated_todo['completed']
+        todo_id = updated_todo["id"]
+        todo_content = updated_todo["content"]
+        todo_completed = updated_todo["completed"]
 
         todo = Todo.query.get(todo_id)
         if not todo:
@@ -137,3 +178,25 @@ def save_task():
 
     db.session.commit()
     return jsonify({"message": "Task updated successfully"})
+
+# Update checkbox when clicked 
+@app.route('/todos/<int:todo_id>', methods=['PUT'])
+def update_todo(todo_id):
+    try:
+        todo = Todo.query.get(todo_id)
+
+        if not todo:
+            return jsonify({'message': 'Todo not found'}), 404
+
+        data = request.get_json()
+
+        if 'completed' in data:
+            todo.completed = data['completed']
+
+        db.session.commit()
+
+        return jsonify({'message': 'Todo updated successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
