@@ -1,43 +1,31 @@
-// Event Listeners
+function deleteTask(taskId) {
+  const taskCard = document.getElementById("task-card-" + taskId);
+  console.log('Editing task with ID:', taskId);
+
+  // Call your delete task API
+  fetch(`/tasks/${taskId}`, { // Change /delete_task/ to /tasks/
+  method: 'DELETE',
+})
+  .then(response => {
+    if (response.ok) {
+      // Remove task card from the DOM
+      taskCard.remove();
+    } else {
+      alert("Error deleting task. Please try again.");
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert("Error deleting task. Please try again.");
+  });
+}
+
 document.querySelectorAll(".delete-task").forEach((button) => {
   button.addEventListener("click", () => {
     const taskId = button.getAttribute("data-task-id");
     deleteTask(taskId);
   });
 });
-
-document.querySelectorAll(".complete-task").forEach((button) => {
-  button.addEventListener("click", () => {
-    const taskId = button.getAttribute("data-task-id");
-    const completed = button.getAttribute("data-completed") === "True";
-    toggleTaskCompletion(taskId, completed);
-  });
-});
-
-
-// Task related functions 
-function deleteTask(taskId) {
-  const taskCard = document.getElementById("task-card-" + taskId);
-  console.log("Editing task with ID:", task_id);
-
-  // Call your delete task API
-  fetch(`/tasks/${taskId}`, {
-    // Change /delete_task/ to /tasks/
-    method: "DELETE",
-  })
-    .then((response) => {
-      if (response.ok) {
-        // Remove task card from the DOM
-        taskCard.remove();
-      } else {
-        alert("Error deleting task. Please try again.");
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("Error deleting task. Please try again.");
-    });
-}
 
 function toggleTaskCompletion(taskId, completed) {
   fetch(`/tasks/${taskId}`, {
@@ -57,6 +45,27 @@ function toggleTaskCompletion(taskId, completed) {
     .catch((error) => {
       console.error("Error:", error);
     });
+}
+
+document.querySelectorAll(".complete-task").forEach((button) => {
+  button.addEventListener("click", () => {
+    const taskId = button.getAttribute("data-task-id");
+    const completed = button.getAttribute("data-completed") === "True";
+    toggleTaskCompletion(taskId, completed);
+  });
+});
+
+function toggleTodo(todo_id) {
+  const checkbox = document.getElementById("checkbox-" + todo_id);
+  const content = document.getElementById("todo-content-" + todo_id);
+
+  if (checkbox.checked) {
+    content.style.textDecoration = "line-through";
+  } else {
+    content.style.textDecoration = "none";
+  }
+
+  // You can also call an API here to update the todo.completed status on the server-side
 }
 
 function editTask(task_id) {
@@ -144,24 +153,17 @@ function editTask(task_id) {
   }
 }
 
+
 async function saveTask(task_id) {
-  const taskTitle = document.getElementById(
-    "task-title-" + task_id
-  ).textContent;
+  const taskTitle = document.getElementById("task-title-" + task_id).textContent;
   const taskCard = document.getElementById("task-card-" + task_id);
   const taskDescription = taskCard.querySelector(".card-text").textContent;
 
-  const todoItems = Array.from(
-    document.querySelectorAll("#task-card-" + task_id + " .list-group-item")
-  ).map((todoItem) => {
+  const todoItems = Array.from(document.querySelectorAll("#task-card-" + task_id + " .list-group-item")).map(todoItem => {
     const todoId = todoItem.id.split("-")[2];
-    const todoContent = document.getElementById(
-      "todo-content-" + todoId
-    ).textContent;
-    const todoCompleted = todoItem.classList.contains(
-      "list-group-item-success"
-    );
-    return { id: todoId, content: todoContent, completed: todoCompleted };
+    const todoContent = document.getElementById("todo-content-" + todoId).textContent;
+    const todoCompleted = todoItem.classList.contains("list-group-item-success");
+    return {id: todoId, content: todoContent, completed: todoCompleted};
   });
 
   const taskData = {
@@ -172,76 +174,31 @@ async function saveTask(task_id) {
   };
 
   try {
-    const response = await fetch("/tasks/save", {
-      method: "POST",
+    const response = await fetch('/tasks/save', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(taskData),
+      body: JSON.stringify(taskData)
     });
 
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      throw new Error('Network response was not ok');
     }
 
-    console.log("Task saved successfully.");
+    console.log('Task saved successfully.');
   } catch (error) {
-    console.error("There was a problem with the fetch operation:", error);
+    console.error('There was a problem with the fetch operation:', error);
   }
 }
 
-async function updateTaskTitle(task_id, titleElement) {
-  console.log("Updating task title with ID:", task_id);
-  try {
-    const response = await fetch(`/tasks/${task_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title: titleElement.textContent }),
-    });
 
-    if (!response.ok) {
-      throw new Error("Error updating task title.");
-    }
-  } catch (error) {
-    console.error("Error updating task title:", error);
-    alert("Failed to update the task title. Please try again.");
-  }
-}
-
-async function toggleTodo(todo_id) {
-  const checkbox = document.getElementById("checkbox-" + todo_id);
-  const content = document.getElementById("todo-content-" + todo_id);
-
-  if (checkbox.checked) {
-    content.style.textDecoration = "line-through";
-  } else {
-    content.style.textDecoration = "none";
-  }
-
-  // Call an API here to update the todo.completed status on the server-side
-  try {
-    const response = await fetch(`/todos/${todo_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ completed: checkbox.checked }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Error updating todo completion status.");
-    }
-  } catch (error) {
-    console.error("Error updating todo completion status:", error);
-    alert("Failed to update the todo completion status. Please try again.");
-  }
-}
 
 function editTodo(todo_id) {
   const todoContent = document.getElementById("todo-content-" + todo_id);
-  const editTodoButton = document.querySelector(`[data-todo-id="${todo_id}"]`);
+  const editTodoButton = document.querySelector(
+    `[data-todo-id="${todo_id}"]`
+  );
   const pencilIcon = editTodoButton.querySelector(".fas.fa-pencil-alt");
   const checkIcon = editTodoButton.querySelector(".fas.fa-check");
 
@@ -275,6 +232,24 @@ function removeTodo(todoId) {
       console.error("Error:", error);
       alert("Failed to remove the todo. Please try again.");
     });
+}
+
+function moveTodoUp(todo_id) {
+  const todoItem = document.getElementById("todo-item-" + todo_id);
+  const previousItem = todoItem.previousElementSibling;
+  if (previousItem) {
+    todoItem.parentNode.insertBefore(todoItem, previousItem);
+    // Call your update todo API to update the order of todos on the server-side
+  }
+}
+
+function moveTodoDown(todo_id) {
+  const todoItem = document.getElementById("todo-item-" + todo_id);
+  const nextItem = todoItem.nextElementSibling;
+  if (nextItem) {
+    todoItem.parentNode.insertBefore(nextItem, todoItem);
+    // Call your update todo API to update the order of todos on the server-side
+  }
 }
 
 async function addTodo(task_id) {
@@ -318,11 +293,10 @@ async function addTodo(task_id) {
       newTodoContent.id = `todo-content-${todo.id}`;
       newCheckbox.id = `checkbox-${todo.id}`;
       newCheckbox.setAttribute("onchange", `toggleTodo(${todo.id})`);
+
     } else {
       throw new Error("Error creating todo.");
-      alert(
-        "An error occurred while trying to save the new todo. Please try again."
-      );
+      alert("An error occurred while trying to save the new todo. Please try again.");
     }
   } catch (error) {
     console.error("Error creating todo:", error);
@@ -330,8 +304,28 @@ async function addTodo(task_id) {
   }
 }
 
+async function updateTaskTitle(task_id, titleElement) {
+  console.log('Updating task title with ID:', task_id);
+  try {
+    const response = await fetch(`/tasks/${task_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title: titleElement.textContent }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error updating task title.");
+    }
+  } catch (error) {
+    console.error("Error updating task title:", error);
+    alert("Failed to update the task title. Please try again.");
+  }
+}
+
 async function updateTodoContent(todo_id, todoContentElement) {
-  console.log("Updating todo content with ID:", todo_id);
+  console.log('Updating todo content with ID:', todo_id);
   try {
     const response = await fetch(`/todos/${todo_id}`, {
       method: "PUT",
@@ -350,13 +344,10 @@ async function updateTodoContent(todo_id, todoContentElement) {
   }
 }
 
-
-// Utility Functions 
 function attachBlurEventListeners() {
   document.querySelectorAll(".card-title").forEach((titleElement) => {
     titleElement.addEventListener("blur", (event) => {
-      const task_id =
-        event.target.parentElement.parentElement.parentElement.id.split("-")[2];
+      const task_id = event.target.parentElement.parentElement.parentElement.id.split("-")[2];
       updateTaskTitle(task_id, event.target);
     });
   });
@@ -368,4 +359,3 @@ function attachBlurEventListeners() {
     });
   });
 }
-
