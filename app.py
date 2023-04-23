@@ -10,6 +10,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # Create flask app and configure it to use the config file
 app = Flask(__name__)
+app.debug = True
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
 
