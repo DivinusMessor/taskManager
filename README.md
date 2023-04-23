@@ -25,49 +25,50 @@ Copy code
 
 # Installation & Setup
 Clone the repository to your local machine:
-
 ```bash
-Copy code
 git clone https://github.com/yourusername/task-management-system.git
 ```
+
 Navigate to the project directory:
-
-bash
-Copy code
+```bash
 cd task-management-system
+```
 Create a virtual environment to manage the project dependencies:
-
-Copy code
+```bash
 python -m venv venv
-Activate the virtual environment:
+```
 
+# Activate the virtual environment:
 On Windows:
-
-Copy code
+```python
 .\venv\Scripts\activate
+```
+
 On macOS/Linux:
-
-bash
-Copy code
+```bash
 source venv/bin/activate
+```
+
 Install the required packages:
-
-Copy code
+```bash
 pip install -r requirements.txt
+```
+
 Initialize the database:
-
-csharp
-Copy code
+```csharp
 flask db init
+```
+
 Apply database migrations:
-
-Copy code
+```bash
 flask db upgrade
-Run the application:
+```
 
-arduino
-Copy code
+Run the application:
+```bash
 flask run
+```
+
 The application will be running at http://127.0.0.1:5000/.
 
 License
