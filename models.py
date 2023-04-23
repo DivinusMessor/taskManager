@@ -11,7 +11,7 @@ class Task(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     todos = db.relationship('Todo', back_populates='parent_task', lazy=True)
     
-class Todo(db.Model):
+class Todo(db.Model): 
     __tablename__ = 'todo'
     id = db.Column(db.Integer, primary_key=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)

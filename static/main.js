@@ -229,8 +229,8 @@ async function addTodo(task_id) {
   newTodoItem.className = "list-group-item";
   newTodoItem.id = "todo-item-" + newTodoId; // Assign the ID to the new todo item
   newTodoItem.innerHTML = `
-    <input type="checkbox" id="checkbox-${newTodoId}" onchange="toggleTodo(${newTodoId})">
-    <span id="todo-content-${newTodoId}" contenteditable="true">New Todo</span>
+    <input type="checkbox" id="checkbox-${newTodoId}" class="toggle-todo" onchange="toggleTodo(${newTodoId})">
+    <span id="todo-content-${newTodoId}" class="todo-content" contenteditable="true">New Todo</span>
     <button class="btn btn-danger btn-sm remove-todo hide-button" onclick="removeTodo(${newTodoId})">Remove</button>
     <button class="btn btn-secondary btn-sm move-up-todo hide-button" onclick="moveTodoUp(${newTodoId})">Up</button>
     <button class="btn btn-secondary btn-sm move-down-todo hide-button" onclick="moveTodoDown(${newTodoId})">Down</button>
@@ -243,17 +243,7 @@ async function addTodo(task_id) {
   newCheckbox.addEventListener("change", () => toggleTodo(newTodoId));
 
   // Save the new todo immediately
-  await saveNewTodo(task_id, newTodoItem);
-}
-    
-async function saveNewTodo(task_id, todoItem) {
-  const newTodoContent = todoItem.querySelector("span[contenteditable='true']");
-
-  if (newTodoContent.textContent.trim() === "") {
-    alert("Please enter some text for the new todo.");
-    return;
-  }
-
+  const newTodoContent = newTodoItem.querySelector(".todo-content");
   try {
     const response = await fetch(`/tasks/${task_id}/todos`, {
       method: "POST",
@@ -265,25 +255,10 @@ async function saveNewTodo(task_id, todoItem) {
 
     if (response.ok) {
       const todo = await response.json();
-      todoItem.id = `todo-item-${todo.id}`;
-      newTodoContent.contentEditable = "false";
+      newTodoItem.id = `todo-item-${todo.id}`;
       newTodoContent.id = `todo-content-${todo.id}`;
-
-      // Add other elements, such as checkbox and buttons, to the new todo item
-      // Similar to how you add them when loading the initial todos in the index.html
-
-      // Example:
-      const todoCheckbox = document.createElement("input");
-      todoCheckbox.type = "checkbox";
-      todoCheckbox.id = `checkbox-${todo.id}`;
-      todoCheckbox.addEventListener("change", () => toggleTodo(todo.id));
-      todoItem.prepend(todoCheckbox);
-
-      // Add other buttons (remove, move up, move down) as well
-
-      // Update the remove button onclick attribute
-      const removeButton = todoItem.querySelector('.remove-todo');
-      removeButton.setAttribute('onclick', `removeTodo(${todo.id})`);
+      newCheckbox.id = `checkbox-${todo.id}`;
+      newCheckbox.setAttribute("onchange", `toggleTodo(${todo.id})`);
 
     } else {
       throw new Error("Error creating todo.");
